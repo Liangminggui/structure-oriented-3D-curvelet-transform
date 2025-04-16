@@ -8,7 +8,6 @@ from scipy.signal import convolve2d
 
 start_time = time.time()
 
-data = np.memmap( '../data.dat',   dtype='float32', mode='r', shape=(136, 111, 250))
 noise = np.memmap('../noise.dat',  dtype='float32', mode='r', shape=(136, 111, 250))
 
 
@@ -29,7 +28,7 @@ for s in range(len(cof)):
         cof[s][w] = hardthreshold(cof[s][w], tau[s])
 
 # inverse transform
-xinv = np.real(ct.fdct3d_inverse_wrap(*data.shape, nbscales, nbdstz_coarse, ac, cof))
+xinv = np.real(ct.fdct3d_inverse_wrap(*noise.shape, nbscales, nbdstz_coarse, ac, cof))
 
 # save to binary data
 savebin(xinv, '../th_multi.dat')
@@ -41,22 +40,21 @@ print("Execution time: ", exection_time, "seconds")
 
 
 
-# show the slice
-pos0 = 52; 
-screentio=0.4;
-pos1 = slice(None); pos2 = slice(None);
-data1  = np.transpose(data[pos0, pos1, pos2])
-noise1 = np.transpose(noise[pos0, pos1, pos2])
-xinv1  = np.transpose(xinv[pos0, pos1, pos2])
+# # show the slice
+# pos0 = 52; 
+# screentio=0.4;
+# pos1 = slice(None); pos2 = slice(None);
+# noise1 = np.transpose(noise[pos0, pos1, pos2])
+# xinv1  = np.transpose(xinv[pos0, pos1, pos2])
 
 
-plt.figure(figsize=(100, 50)); axis_num=3
-plt.subplot(1, axis_num, 1)
-plt.imshow(noise1, cmap='seismic2', vmin=-50, vmax=50, aspect=screentio, interpolation='none'), plt.title('Ground')
-plt.subplot(1, axis_num, 2)
-plt.imshow(xinv1, cmap='seismic2', vmin=-50, vmax=50, aspect=screentio, interpolation='none'), plt.title('Global')
-plt.subplot(1, axis_num, 3)
-plt.imshow(noise1-xinv1, cmap='seismic2', vmin=-50, vmax=50, aspect=screentio, interpolation='none'), plt.title('Ground-Global')
-plt.show()
+# plt.figure(figsize=(100, 50)); axis_num=3
+# plt.subplot(1, axis_num, 1)
+# plt.imshow(noise1, cmap='seismic2', vmin=-50, vmax=50, aspect=screentio, interpolation='none'), plt.title('Ground')
+# plt.subplot(1, axis_num, 2)
+# plt.imshow(xinv1, cmap='seismic2', vmin=-50, vmax=50, aspect=screentio, interpolation='none'), plt.title('Global')
+# plt.subplot(1, axis_num, 3)
+# plt.imshow(noise1-xinv1, cmap='seismic2', vmin=-50, vmax=50, aspect=screentio, interpolation='none'), plt.title('Ground-Global')
+# plt.show()
 
 
