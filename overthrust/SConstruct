@@ -18,13 +18,13 @@ def result3s (data,other):
             flat=n wantaxis=y wanttitle=n color=g point1=0.85 point2=0.7 screenratio=1
             '''%(other))
 
-# def result (data,other):
-#     Result (data,
-#              '''
-#              grey title=%s label1='Time' unit1='s' label2='Trace' unit2=''
-#              color=g screenratio=1.5 wanttitle=n pclip=99 bar=y scalebar=n
-#              %s
-#              '''%(data,other))
+def result (data,other):
+    Result (data,
+             '''
+             grey title=%s label1='Time' unit1='s' label2='Trace' unit2=''
+             color=g screenratio=1.5 wanttitle=n pclip=99 bar=y scalebar=n
+             %s
+             '''%(data,other))
 def plot3 (data,other):
      Plot (data,
             '''
