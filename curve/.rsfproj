@@ -1,0 +1,3 @@
+uses=['sfbin2rsf', 'sfput', 'sfdip', 'sfrsf2bin', 'sftransp', 'sfadd', 'sfbyte', 'sfgrey3']
+data=[]
+size=   26185376
