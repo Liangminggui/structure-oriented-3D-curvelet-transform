@@ -1,5 +1,4 @@
 from rsf.proj import *
-# from radius2 import radius2
 
 
 ##############################################################################################
@@ -60,7 +59,7 @@ result3 ('noise', '')
 
 Flow ('dipc',       'cube',      'dip rect1=4 rect2=4 rect3=3 order=4 n4=0')
 Flow ('dip0',       'noise',     'dip rect1=4 rect2=4 rect3=3 order=4 n4=0')
-# Flow ('dip0.dat',   'dip0',      'rsf2bin')
+Flow ('dip0.dat',   'dip0',      'rsf2bin')
 result3d ('dipc', '')
 result3d ('dip0', '')
 

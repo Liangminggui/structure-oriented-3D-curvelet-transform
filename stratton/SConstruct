@@ -1,0 +1,122 @@
+from rsf.proj import *
+  
+  
+  
+  
+###########################################################################################
+def result (data,other):
+    Result (data,
+             '''
+             grey title=%s label1='Time' unit1='s' label2='Trace' unit2=''
+             color=g screenratio=1.5 wanttitle=n pclip=99 bar=y scalebar=n
+             %s 
+             '''%(data,other))
+def plot (data,other):
+    Plot (data,
+             '''
+             grey title=%s label1='Time' unit1='s' label2='Trace' unit2=''
+             color=g screenratio=1.5 wanttitle=n clip=3 bar=y scalebar=n
+             %s 
+             '''%(data,other))
+def result3 (data, other):
+     Result (data,
+            '''
+            byte clip=2e3 bar=bar.rsf %s| grey3 frame1=150 frame2=45 frame3=58
+            title='' label1='Time' unit1='s' label2='Inline' unit2='' label3='Crossline' unit3=''
+            flat=n wantaxis=y wanttitle=n color=g point1=0.85 point2=0.64 screenratio=1
+            '''%(other))
+def result3d (data, other):
+     Result (data,
+            '''
+            byte clip=2 bar=bar.rsf %s| grey3 frame1=150 frame2=45 frame3=18
+            title='' label1='Time' unit1='s' label2='Inline' unit2='' label3='Crossline' unit3=''
+            flat=n wantaxis=y wanttitle=n color=j point1=0.85 point2=0.64 screenratio=1 scalebar=y barlabel="Inline Slpoe"
+            '''%(other))
+def result3s (data, other):
+     Result (data,
+            '''
+            byte clip=0.55 bar=bar.rsf %s| grey3 frame1=150 frame2=45 frame3=58
+            title='' label1='Time' unit1='s' label2='Inline' unit2='' label3='Crossline' unit3=''
+            flat=n wantaxis=y wanttitle=n color=j point1=0.85 point2=0.64 screenratio=1
+            scalebar=y minval=0 maxval=0.3
+            '''%(other))
+def plot3 (data, other):
+     Plot (data,
+            '''
+            byte clip=3e+6 bar=bar.rsf %s| grey3 frame1=150 frame2=50 frame3=15
+            title='' label1='Time' unit1='s' label2='Inline' unit2='' label3='Crossline' unit3=''
+            flat=n wantaxis=y wanttitle=n color=g point1=0.85 point2=0.64 screenratio=1.5 o1num=0 d1num=2 n1tic=3 
+            '''%(other))
+def wig (data, other):
+    Result (data,
+            '''
+            wiggle title=%s transp=y yreverse=y label1='Time' unit1='s' label2='Trace' unit2=''
+            screenratio=1
+            %s
+            '''%(data, other))
+def graph (data, other):
+    Result (data,
+            '''
+            graph title=%s label1='Frequency' unit1='Hz' label2='Amplitude' unit2='' screenratio=0.5
+            %s
+            '''%(data, other))
+
+###########################################################################################
+
+
+Flow ('cube-2',    './cube.dat', 'bin2rsf n1=350 n2=7700 | put n1=350 n2=77 n3=100')
+Flow ('ndip-2',    'cube-2',     'dip rect1=10 rect2=10 rect3=10 order=5 n4=0 verb=n')
+Flow ('ndip-th-2', 'ndip-2',     'thr mod=hard thr=1.4 | math output="abs(input)"')
+Flow ('ndip.dat',  'ndip-2',     'rsf2bin')
+result3  ('cube-2', '')
+result3d ('ndip-2', '')
+result3  ('ndip-th-2', 'clip=0.001')
+
+
+Flow ('th_global-2',  './th_global.dat', 'bin2rsf n1=350 n2=7700 | put n1=350 n2=77 n3=100')
+Flow ('th_multi-2',   './th_multi.dat',  'bin2rsf n1=350 n2=7700 | put n1=350 n2=77 n3=100')
+Flow ('th_mdip-2',    './th_mdip.dat',   'bin2rsf n1=350 n2=7700 | put n1=350 n2=77 n3=100')
+Flow ('diff0-2', 'cube-2 th_global-2', 'add scale=1,-1 ${SOURCES[1]}')
+Flow ('diff1-2', 'cube-2 th_multi-2',  'add scale=1,-1 ${SOURCES[1]}')
+Flow ('diff2-2', 'cube-2 th_mdip-2',   'add scale=1,-1 ${SOURCES[1]}')
+result3 ('th_global-2', '')
+result3 ('th_multi-2', '')
+result3 ('th_mdip-2', '')
+result3 ('diff0-2', '')
+result3 ('diff1-2', '')
+result3 ('diff2-2', '')
+
+
+## local similarity
+Flow ('simi0-2', 'diff0-2 th_global-2', 'similarity other=${SOURCES[1]} niter=20 rect1=5 rect2=5 rect3=5 verb=n')
+Flow ('simi1-2', 'diff1-2 th_multi-2',  'similarity other=${SOURCES[1]} niter=20 rect1=5 rect2=5 rect3=5 verb=n')
+Flow ('simi2-2', 'diff2-2 th_mdip-2',   'similarity other=${SOURCES[1]} niter=20 rect1=5 rect2=5 rect3=5 verb=n')
+result3s ('simi0-2', '')
+result3s ('simi1-2', '')
+result3s ('simi2-2', '')
+
+
+Plot('label0',None,
+    '''
+    box x0=3.800 y0=6.080 label="" xt=-0.400000 yt=0.400000 lab_fat=2 lab_color=7 boxit=1 size=0.350000 pointer=1 x_oval=0.000000 y_oval=0.000000
+    ''')
+Plot('label1',None,
+    '''
+    box x0=6.991 y0=4.200 label="" xt=0.400000 yt=-0.400000 lab_fat=2 lab_color=7 boxit=1 size=0.350000 pointer=1 x_oval=0.000000 y_oval=0.000000
+    ''')
+Plot('label2',None,
+    '''
+    box x0=6.460 y0=2.146 label="" xt=0.400000 yt=-0.400000 lab_fat=2 length=0.9 lab_color=7 boxit=1 size=0.350000 pointer=1 x_oval=0.000000 y_oval=0.000000
+    ''')
+
+Result ('simi0-m-2',   'Fig/simi0-2.vpl label0', 'Overlay')
+Result ('simi1-m-2',   'Fig/simi1-2.vpl label0', 'Overlay')
+Result ('simi2-m-2',   'Fig/simi2-2.vpl label0', 'Overlay')
+Result ('cube-m-2',    'Fig/cube-2.vpl  label2', 'Overlay')
+
+
+
+
+
+
+End ()
