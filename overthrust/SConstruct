@@ -1,0 +1,119 @@
+from rsf.proj import *
+# from radius2 import radius2
+
+
+##############################################################################################
+def result3 (data,other):
+     Result (data,
+            '''
+            byte clip=5 bar=bar.rsf | grey3 frame1=60 frame2=40 frame3=57
+            title='' label1='Time' unit1='s' label2='Inline' unit2='' label3='Crossline' unit3=''
+            flat=n wantaxis=y wanttitle=n color=g point1=0.85 point2=0.7 screenratio=1
+            %s
+            '''%(other))
+def result3s (data,other):
+     Result (data,
+            '''
+            byte clip=3 bar=bar.rsf %s | grey3 frame1=60 frame2=40 frame3=57
+            title='' label1='Time' unit1='s' label2='Inline' unit2='' label3='Crossline' unit3=''
+            flat=n wantaxis=y wanttitle=n color=g point1=0.85 point2=0.7 screenratio=1
+            '''%(other))
+
+def result (data,other):
+    Result (data,
+             '''
+             grey title=%s label1='Time' unit1='s' label2='Trace' unit2=''
+             color=g screenratio=1.5 wanttitle=n pclip=99 bar=y scalebar=n
+             %s 
+             '''%(data,other))
+def plot3 (data,other):
+     Plot (data,
+            '''
+            byte pclip=99 bar=bar.rsf | grey3 frame1=10 frame2=10 frame3=10
+            title='' label1='Time' unit1='s' label2='X' unit2='' label3='Y' unit3=''
+            flat=n wantaxis=y wanttitle=n color=g point1=0.85 point2=0.84 screenratio=0.9
+            %s
+            '''%(other))
+def result3d(data1,other):
+	Result(data1,
+       '''
+       byte gainpanal=e clip=2 bar=bar.rsf|put d1=0.004 d2=1 d3=1 %s|
+       grey3 flat=n frame1=60 frame2=40 frame3=57 point1=0.85  point2=0.7 
+       title='' label1='Time' unit1='s' label2='Inline' unit2='' label3='Crossline' unit3=''
+       color=i screenratio=1 scalebar=y minval=-5 maxval=4 barlabel="Inline Slpoe" '''%other) 
+def result3d1(data1,other):
+	Result(data1,
+       '''
+       byte gainpanal=e clip=2 bar=bar.rsf %s |put d1=0.004 d2=1 d3=1 |
+       grey3 flat=n frame1=60 frame2=40 frame3=57 
+       title='' label1='Time' unit1='s' label2='Inline' unit2='' label3='Crossline' unit3=''
+       point1=0.85  point2=0.7  color=g
+       screenratio=1 scalebar=y barlabel="Inline Slpoe" '''%other) 
+###############################################################################################
+
+
+Flow ('cube',   './data.dat',  'bin2rsf  n1=130 n2=4489 | put n1=130 n2=67 n3=67 d3=1 o3=0')
+Flow ('noise',  './noise.dat', 'bin2rsf  n1=130 n2=4489 | put n1=130 n2=67 n3=67 d3=1 o3=0')
+result3 ('cube',  '')
+result3 ('noise', '')
+
+
+Flow ('dipc',       'cube',      'dip rect1=4 rect2=4 rect3=3 order=4 n4=0')
+Flow ('dip0',       'noise',     'dip rect1=4 rect2=4 rect3=3 order=4 n4=0')
+# Flow ('dip0.dat',   'dip0',      'rsf2bin')
+result3d ('dipc', '')
+result3d ('dip0', '')
+
+
+Flow ('dip0-th','dip0','thr mod=hard thr=1.8 | math output="abs(input)" | mask min=0.00001 | dd type=float')
+Flow ('noise-dip0',    'noise dip0-th', 'math x=${SOURCES[1]} output="input*x"')
+result3 ('noise-dip0',  '')
+
+
+
+Flow ('th_global', './th_global.dat', 'bin2rsf  n1=130 n2=4489 | put n1=130 n2=67 n3=67')
+Flow ('th_multi',  './th_multi.dat',  'bin2rsf  n1=130 n2=4489 | put n1=130 n2=67 n3=67')
+Flow ('th_mdip',   './th_mdip.dat',   'bin2rsf  n1=130 n2=4489 | put n1=130 n2=67 n3=67')
+
+Flow ('diff0',     'noise th_global', 'add scale=1,-1 ${SOURCES[1]}')
+Flow ('diff1',     'noise th_multi',  'add scale=1,-1 ${SOURCES[1]}')
+Flow ('diff2',     'noise th_mdip',   'add scale=1,-1 ${SOURCES[1]}')
+
+Flow ('error0',    'cube th_global', 'add scale=1,-1 ${SOURCES[1]}')
+Flow ('error1',    'cube th_multi',  'add scale=1,-1 ${SOURCES[1]}')
+Flow ('error2',    'cube th_mdip',   'add scale=1,-1 ${SOURCES[1]}')
+
+result3 ('th_global', '')
+result3 ('th_multi',  '')
+result3 ('th_mdip',   '')
+
+result3 ('diff0', '')
+result3 ('diff1', '')
+result3 ('diff2', '')
+
+result3 ('error0', '')
+result3 ('error1', '')
+result3 ('error2', '')
+
+
+Plot('label0',None,
+    '''
+    box x0=3.888 y0=5.421 label="" xt=-0.400000 yt=0.400000 lab_fat=2 lab_color=7 boxit=1 size=0.350000 pointer=1 x_oval=0.000000 y_oval=0.000000
+    ''')
+Plot('label1',None,
+    '''
+    box x0=5.585 y0=5.623 label="" xt=0.400000 yt=0.400000 lab_fat=2 lab_color=7 boxit=1 size=0.350000 pointer=1 x_oval=0.000000 y_oval=0.000000
+    ''')
+
+Result ('error0-m',   'Fig/error0.vpl label0 label1', 'Overlay')
+Result ('error1-m',   'Fig/error1.vpl label0 label1', 'Overlay')
+Result ('error2-m',   'Fig/error2.vpl label0 label1', 'Overlay')
+
+
+
+
+
+
+
+
+End()

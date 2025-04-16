@@ -1,0 +1,3 @@
+uses=['sfbin2rsf', 'sfput', 'sfnoise', 'sfbandpass', 'sfpow', 'sfreverse', 'sfadd', 'sfrsf2bin', 'sfbyte', 'sfgrey3', 'sfdip', 'sfthr', 'sfmath', 'sfmask', 'sfdd', 'sfbox']
+data=[]
+size=   42034728
